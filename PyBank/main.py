@@ -1,19 +1,20 @@
+#import os/csv
 import os
 import csv
-
-csvpath = os.path.join('..', 'Resources', 'budget_data.csv')
-file_to_output = os.path.join('..',"analysis", "budget_analysis.txt")
-
+#define csv path
+csvpath = os.path.join('', 'Resources', 'budget_data.csv')
+file_to_output = os.path.join('', "analysis", "budget_analysis.txt")
+#variables
 total_months = 0
 net_total = 0
 previous = None
 changes = []
 months = []
 
-# Open and read the CSV file
+# read the csv file
 with open(csvpath) as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
-
+#header
     # Read the header
     header = next(csvreader)
 
