@@ -1,49 +1,63 @@
 import os
 import csv
 
-# Construct the path to the CSV file
 csvpath = os.path.join('..', 'Resources', 'budget_data.csv')
+file_to_output = os.path.join('..',"analysis", "budget_analysis.txt")
 
-# Initialize counters and lists
 total_months = 0
 net_total = 0
-previous_value = None  # To store the value of the previous row
-changes = []  # To store month-to-month changes
+previous = None
+changes = []
+months = []
 
-# Open the CSV file
+# Open and read the CSV file
 with open(csvpath) as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
 
-    # Skip the header (optional)
+    # Read the header
     header = next(csvreader)
 
-    # Loop through the rows in the CSV file to count the months, sum column 2, and track changes
+    # Process each row in the CSV file
     for row in csvreader:
         total_months += 1
-        current_value = int(row[1])  # Assuming values in column 2 are integers
+        current = int(row[1])
 
-        # Add the current value to the net total
-        net_total += current_value
+        net_total += current
 
-        # If there's a previous value, calculate the change and add to the changes list
-        if previous_value is not None:
-            change = current_value - previous_value
+        if previous is not None:
+            change = current - previous
             changes.append(change)
+            months.append(row[0])
 
-        # Set the current value as the previous value for the next iteration
-        previous_value = current_value
+        previous = current
 
-# Calculate the average change
-if changes:  # Check to ensure we have changes to average
+# Calculate average change, greatest increase and greatest decrease
+if changes:
     average_change = sum(changes) / len(changes)
+    greatest_increase = max(changes)
+    greatest_decrease = min(changes)
+    greatest_increase_month = months[changes.index(greatest_increase)]
+    greatest_decrease_month = months[changes.index(greatest_decrease)]
 else:
     average_change = 0
+    greatest_increase = greatest_decrease = 0
+    greatest_increase_month = greatest_decrease_month = ""
 
-# Print the results
+# Print the results to the terminal
 print("Financial Analysis")
-print("---------------------------------")
-print(f"Total Months: {total_months}")
-print(f"Total: {net_total}")
-print(f"Average Change: {average_change:.2f}")  # Printing to two decimal places
-print("Greatest Increase in Profits:", max(changes))
-print("Greatest Decrease in Profits:", min(changes))
+print("--------------------------------")
+print(f'Total Months: {total_months}')
+print(f'Total: ${net_total}')
+print(f"Average Change: ${average_change:.2f}")
+print(f'Greatest Increase in Profits: {greatest_increase_month} (${greatest_increase})')
+print(f'Greatest Decrease in Profits: {greatest_decrease_month} (${greatest_decrease})')
+
+# Write the results to a text file
+with open(file_to_output, "w") as txt_file:
+    txt_file.write("Financial Analysis\n")
+    txt_file.write("--------------------------------\n")
+    txt_file.write(f'Total Months: {total_months}\n')
+    txt_file.write(f'Total: ${net_total}\n')
+    txt_file.write(f"Average Change: ${average_change:.2f}\n")
+    txt_file.write(f'Greatest Increase in Profits: {greatest_increase_month} (${greatest_increase})\n')
+    txt_file.write(f'Greatest Decrease in Profits: {greatest_decrease_month} (${greatest_decrease})\n')
